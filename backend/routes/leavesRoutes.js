@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post('/', auth, applyLeave);
 router.get('/me', auth, getOwnLeaves);
-
+router.get('/pending', auth, getPendingForAssigned);
+router.put('/:id/decide', auth, decideLeave); 
 module.exports = router;
