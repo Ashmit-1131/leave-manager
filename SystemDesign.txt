@@ -1,0 +1,63 @@
+
+1)  flow (step-by-step)
+-------------------------------------
+Employee Login/Register
+  -> Employee Dashboard
+    -> Apply Leave (Form)
+      -> Leave Request Saved (Status: Pending)
+        -> Send Email to Manager/HR with Approve/Reject links
+          -> Manager Reviews:
+             - If Approve:
+                -> Deduct leave balance
+                -> Notify employee (email)
+                -> Update LeaveRequest status = Approved
+             - If Reject:
+                -> Notify employee (email) with comments
+                -> Update LeaveRequest status = Rejected
+             - If No Action within 24 hours:
+                -> Scheduler detects stale Pending requests
+                -> Escalate to HR (Escalated)
+                -> HR Reviews & Decides (Approve/Reject)
+  -> (If user is Admin) Admin Dashboard:
+       -> View employees, pending leave requests
+       -> Adjust leave balances (Add/Reduce)
+
+2) ASCII Flowchart
+------------------
+[Employee Login/Register]
+          |
+          v
+ [Employee Dashboard] -----> (If Admin) ----> [Admin Dashboard]
+          |
+          v
+    [Apply Leave Form]
+          |
+          v
+[Leave Request Saved (Pending)]
+          |
+          v
+[Send Email to Manager/HR]
+          |
+          v
+[Manager Reviews]
+   /      |        \
+  /       |         \
+Approve  Reject   No Action (24h)
+  |        |            |
+  v        v            v
+[Deduct] [Notify]  [Scheduler Escalates]
+Balance  Employee       |
+  |        |            v
+  v        v        [Escalate to HR]
+[Notify Employee]      |
+                       v
+                 [HR Reviews & Decides]
+                   /           \
+                  /             \
+              Approve           Reject
+                |                 |
+                v                 v
+         [Deduct Balance]     [Notify Employee]
+                |
+                v
+        [Update LeaveRequest Status]

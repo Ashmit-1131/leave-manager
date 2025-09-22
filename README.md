@@ -27,7 +27,7 @@ cp .env.example .env
 npm install
 npm start
 
-Open http://localhost:3000 (frontend) and backend runs on http://localhost:5000
+Open http://localhost:3000 (frontend) and backend runs on http://localhost:8082
 
 ## Features
 - Register/login for Employee & Admin (JWT)
