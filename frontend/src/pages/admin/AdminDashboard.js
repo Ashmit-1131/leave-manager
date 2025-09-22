@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPending } from '../redux/slices/leavesSlice';
-import API from '../api/apiClient';
-import LeaveTable from '../components/LeaveTable';
-import { logout } from '../redux/slices/authSlice';
+import { fetchPending } from '../../redux/slices/leavesSlice';
+import API from '../../api/apiClient';
+import LeaveTable from '../../components/LeaveTable';
+import { logout } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 export default function AdminDashboard(){

@@ -1,22 +1,42 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import LoginPage from './pages/Login';
+import RegisterPage from './pages/Register';
 import EmployeeDashboard from './pages/EmployeeDashboard';
-import AdminDashboard from './pages/AdminDashboard';
+import ApplyLeave from './pages/ApplyLeave';
+import LeaveHistory from './pages/LeaveHistory';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminEmployees from './pages/admin/AdminEmployees';
+import AdminRequests from './pages/admin/AdminRequests';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
+import MainLayout from './components/layouts/MainLayout';
 
-function App() {
+export default function App() {
   return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
-          <Route path="/employee" element={<EmployeeDashboard/>}/>
-          <Route path="/admin" element={<AdminDashboard/>}/>
-        </Routes>
-     
+      {/* Protected: any authenticated user */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<EmployeeDashboard />} />
+          <Route path="/apply-leave" element={<ApplyLeave />} />
+          <Route path="/leave-history" element={<LeaveHistory />} />
+
+          {/* admin nested routes */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/employees" element={<AdminEmployees />} />
+            <Route path="/admin/requests" element={<AdminRequests />} />
+          </Route>
+        </Route>
+      </Route>
+
+      {/* Fallback */}
+      <Route path="*" element={<div className="p-8">404 - Page not found</div>} />
+    </Routes>
   );
 }
-
-export default App;
