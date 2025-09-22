@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { register } from '../store/slices/authSlice';
+import { register } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/apiClient';
 
