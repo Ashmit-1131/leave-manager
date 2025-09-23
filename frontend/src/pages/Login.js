@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../redux/slices/authSlice';
@@ -12,31 +13,56 @@ export default function Login() {
   const auth = useSelector(s => s.auth);
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
 
-  // Where to redirect after successful login:
-  // - if a "from" location was provided (e.g., action link), use that
-  // - otherwise, go to role-based default
   const getDefaultRedirect = () => (auth?.user?.role === 'admin' ? '/admin' : '/dashboard');
-  const fromPath = location.state?.from?.pathname ? `${location.state.from.pathname || '/'}` : null;
+  const fromPath = location.state?.from?.pathname ? `${location.state.from.pathname}` : null;
 
   useEffect(() => {
-    // If already logged in, redirect immediately
     if (auth && auth.user) {
       const dest = fromPath || getDefaultRedirect();
       navigate(dest, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.user]); // only run when auth.user changes
+  }, [auth.user]);
+
+  const validate = () => {
+    if (!form.email || !form.password) {
+      setErrorMsg('Email and password are required.');
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setErrorMsg('Please enter a valid email address.');
+      return false;
+    }
+    return true;
+  };
 
   const submit = async (e) => {
     e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    if (!validate()) return;
+
     setLoading(true);
     try {
-      await dispatch(login(form)).unwrap();
-      // on success, the useEffect above will perform the navigation
+      // dispatch returns either payload (fulfilled) or throws rejected value via unwrap()
+      const result = await dispatch(login(form)).unwrap();
+      if (result && result.token) {
+        localStorage.setItem('token', result.token);
+      }
+      setSuccessMsg(result?.message || 'Login successful');
+      // navigation handled by useEffect when auth.user updates
     } catch (err) {
-      const msg = err?.message || (err?.payload && err.payload.message) || 'Login failed';
-      alert(msg);
+      // err here is the rejected value (if rejectWithValue used) or an Error object
+      const msg =
+        (err && err.message) || // err may already be an object with message
+        (err && err.payload && err.payload.message) || // defensive, although unwrap gives the payload directly
+        'Login failed';
+      // better: if err is an object returned by rejectWithValue, unwrap() throws that object directly
+      // so check for err.message above suffices for most cases
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
@@ -46,6 +72,10 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md bg-white rounded-lg shadow p-6">
         <h2 className="text-2xl font-semibold mb-4">Sign in</h2>
+
+        {errorMsg && <div className="mb-3 text-sm text-red-600">{errorMsg}</div>}
+        {successMsg && <div className="mb-3 text-sm text-green-600">{successMsg}</div>}
+
         <form onSubmit={submit}>
           <Input
             label="Email"
