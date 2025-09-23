@@ -1,3 +1,4 @@
+// src/pages/Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/apiClient';
@@ -7,15 +8,46 @@ import Button from '../components/ui/Button';
 export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '', employeeId: '', department: '', role: 'employee' });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
+
+  const validate = () => {
+    const { name, email, password, employeeId, department } = form;
+    if (!name || !email || !password || !employeeId || !department) {
+      setErrorMsg('All fields are required.');
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrorMsg('Please enter a valid email.');
+      return false;
+    }
+    if (password.length < 5) {
+      setErrorMsg('Password must be at least 5 characters long.');
+      return false;
+    }
+    return true;
+  };
 
   const submit = async (e) => {
     e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    if (!validate()) return;
+
+    setLoading(true);
     try {
-      await API.post('/auth/register', form);
-      alert('Registered. Please login.');
-      navigate('/login');
+      const res = await API.post('/auth/register', form);
+      setSuccessMsg(res?.data?.message || 'Registered. Please login.');
+      // small delay for user to see message, then redirect
+      setTimeout(() => {
+        navigate('/login');
+      }, 900);
     } catch (err) {
-      alert('Registration failed: ' + (err?.response?.data?.message || err.message));
+      const msg = err?.response?.data?.message || err?.message || 'Registration failed';
+      setErrorMsg(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -23,6 +55,10 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-lg bg-white rounded-lg shadow p-6">
         <h2 className="text-2xl font-semibold mb-4">Register</h2>
+
+        {errorMsg && <div className="mb-3 text-sm text-red-600">{errorMsg}</div>}
+        {successMsg && <div className="mb-3 text-sm text-green-600">{successMsg}</div>}
+
         <form onSubmit={submit}>
           <Input label="Name" name="name" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} />
           <Input label="Employee ID" name="employeeId" value={form.employeeId} onChange={e=>setForm({...form,employeeId:e.target.value})} />
@@ -37,7 +73,7 @@ export default function Register() {
             </select>
           </div>
           <div className="flex justify-end">
-            <Button type="submit">Register</Button>
+            <Button type="submit" disabled={loading}>{loading ? 'Registering...' : 'Register'}</Button>
           </div>
         </form>
       </div>
