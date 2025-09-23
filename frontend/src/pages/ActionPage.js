@@ -3,12 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import API from '../api/apiClient';
 import { useSelector } from 'react-redux';
+import { useToast } from '../components/ToastProvider';
 import Button from '../components/ui/Button';
+import { useConfirm } from '../components/ConfirmProvider';
 
 export default function ActionPage() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = useToast();
+  const confirm = useConfirm();
   const tokenUser = useSelector(s => s.auth.token);
   const user = useSelector(s => s.auth.user);
 
@@ -17,13 +21,11 @@ export default function ActionPage() {
   const [actioning, setActioning] = useState(false);
 
   useEffect(() => {
-    // If not logged in, redirect to login and preserve return path
     if (!tokenUser) {
       navigate('/login', { state: { from: location }, replace: true });
       return;
     }
 
-    // fetch leave details
     const load = async () => {
       setLoading(true);
       try {
@@ -31,26 +33,46 @@ export default function ActionPage() {
         setLeave(res.data.leave);
       } catch (err) {
         console.error(err);
-        alert(err?.response?.data?.message || 'Failed to load leave');
+        toast.push(err?.response?.data?.message || 'Failed to load leave', 'error');
       } finally {
         setLoading(false);
       }
     };
-    load();
-  }, [id, tokenUser, navigate, location]);
+    if (id) load();
+  }, [id, tokenUser, navigate, location, toast]);
+
+  // token in query fallback (rare)
+  useEffect(() => {
+    const qs = new URLSearchParams(location.search);
+    const tok = qs.get('token');
+    if (!id && tok && tokenUser) {
+      (async () => {
+        setLoading(true);
+        try {
+          await API.get(`/leaves/email-action?token=${encodeURIComponent(tok)}`);
+          toast.push('Action completed', 'info');
+          navigate('/action-success', { replace: true });
+        } catch (err) {
+          toast.push(err?.response?.data || 'Action failed', 'error');
+        } finally {
+          setLoading(false);
+        }
+      })();
+    }
+  }, [id, location.search, tokenUser, navigate, toast]);
 
   const decide = async (action) => {
-    if (!window.confirm(`Are you sure you want to ${action} this leave?`)) return;
+    const ok = await confirm(`Are you sure you want to ${action} this leave?`, { title: `${action} leave` });
+    if (!ok) return;
     setActioning(true);
     try {
       await API.put(`/leaves/${id}/decide`, { action, comments: `${action} via frontend` });
-      alert(`Leave ${action}d`);
-      // redirect to relevant page (admin requests or dashboard)
+      toast.push(`Leave ${action}d`, 'info');
       if (user?.role === 'admin') navigate('/admin/requests');
       else navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      alert(err?.response?.data?.message || 'Action failed');
+      toast.push(err?.response?.data?.message || 'Action failed', 'error');
     } finally {
       setActioning(false);
     }
@@ -85,15 +107,12 @@ export default function ActionPage() {
         <div className="font-medium">{leave.status}</div>
       </div>
 
-      {/* Show Approve/Reject only to authorized users (admin or assigned manager) */}
       { (user && (user.role === 'admin' || String(user._id) === String(leave.assignedTo))) && leave.status === 'Pending' && (
         <div className="flex gap-3">
           <Button onClick={() => decide('approve')} className="bg-green-600 hover:bg-green-700">Approve</Button>
           <Button onClick={() => decide('reject')} className="bg-red-600 hover:bg-red-700">Reject</Button>
         </div>
       )}
-
-      {/* If not authorized */}
       {user && !(user.role === 'admin' || String(user._id) === String(leave.assignedTo)) && (
         <div className="text-sm text-gray-600">You are not authorized to decide this request.</div>
       )}

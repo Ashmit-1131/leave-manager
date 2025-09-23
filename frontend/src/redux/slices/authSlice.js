@@ -1,4 +1,4 @@
-
+// src/redux/slices/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import API from '../../api/apiClient';
 
@@ -43,6 +43,20 @@ const authSlice = createSlice({
       state.error = null;
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+    },
+    // new reducer: update leave balances for current user
+    updateLeaveBalance: (state, action) => {
+      if (state.user) {
+        // action.payload should be an object like { casual: Number, privilege: Number }
+        state.user.leaveBalance = action.payload;
+        try {
+          localStorage.setItem('user', JSON.stringify(state.user));
+        } catch (e) {
+          // ignore localStorage write errors
+          // (optionally log in dev)
+          // console.warn('Failed to persist user to localStorage', e);
+        }
+      }
     }
   },
   extraReducers: (builder) => {
@@ -83,5 +97,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, updateLeaveBalance } = authSlice.actions;
 export default authSlice.reducer;
