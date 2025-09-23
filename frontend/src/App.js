@@ -12,12 +12,26 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import MainLayout from './components/layouts/MainLayout';
 
+// New pages for email-action flow
+import ActionPage from './pages/ActionPage';
+import ActionResult from './pages/ActionResult';
+
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* Public pages */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      {/* Public action link used from emails.
+          ActionPage will redirect to /login if user is not authenticated,
+          and after login the user will be returned to this route. */}
+      <Route path="/action/leave/:id" element={<ActionPage />} />
+
+      {/* Friendly result page shown after approve/reject */}
+      <Route path="/action-success" element={<ActionResult />} />
 
       {/* Protected: any authenticated user */}
       <Route element={<ProtectedRoute />}>
