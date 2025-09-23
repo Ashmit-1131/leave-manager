@@ -1,14 +1,16 @@
+// src/pages/ApplyLeave.js
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { applyLeave } from '../redux/slices/leavesSlice';
 import { useNavigate } from 'react-router-dom';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
-import API from '../api/apiClient';
+import { useToast } from '../components/ToastProvider';
 
 export default function ApplyLeave() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
   const [form, setForm] = useState({
     type: 'Casual',
     category: 'Sick',
@@ -21,12 +23,11 @@ export default function ApplyLeave() {
     e.preventDefault();
     try {
       await dispatch(applyLeave(form)).unwrap();
-      alert('Leave applied');
+      toast.push('Leave applied', 'info');
       navigate('/dashboard');
     } catch (err) {
-      // sometimes API returns 400 with message
-      const msg = err?.response?.data?.message || err?.message || 'Error';
-      alert('Failed: ' + msg);
+      const msg = err?.payload?.message || err?.response?.data?.message || err?.message || 'Error';
+      toast.push('Failed: ' + msg, 'error');
     }
   };
 

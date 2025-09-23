@@ -4,13 +4,12 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const validateEmail = (email) => {
-  // simple email regex
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
 const register = async (req, res) => {
   try {
-    const { email, employeeId, name, department, password, role, managerId } = req.body || {};
+    const { email, employeeId, name, department, password, managerId } = req.body || {};
 
     // Basic validation
     if (!email || !employeeId || !name || !department || !password) {
@@ -28,7 +27,6 @@ const register = async (req, res) => {
     // Check existing user by email or employeeId
     const existing = await User.findOne({ $or: [{ email }, { employeeId }] });
     if (existing) {
-      // Give a clear message which field conflicts (don't leak too much)
       if (existing.email === email && existing.employeeId === employeeId) {
         return res.status(409).json({ message: 'A user with this email and employee ID already exists.' });
       }
@@ -41,18 +39,18 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
 
+    // Important: Public registration always creates an employee.
     const user = new User({
       email,
       employeeId,
       name,
       department,
       password: hashed,
-      role: role || 'employee',
+      role: 'employee', // enforce employee role for public register
       manager: managerId || null
     });
     await user.save();
 
-    // Optionally omit sensitive fields in response
     return res.status(201).json({
       message: 'User registered successfully. Please login to continue.',
       user: {
