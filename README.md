@@ -40,17 +40,21 @@ Open http://localhost:3000 (frontend) and backend runs on http://localhost:8082
 
 Register / Login
 ![alt text](image-9.png)
+
 If you are a new user, click Register and create an account.
 
 ![alt text](image-10.png)
+
 If already registered, use Login.
 
 Dashboard
 ![alt text](image-11.png)
+
 After login, you will see your leave balance (Casual & Privilege leaves).
 
 Apply for Leave
 ![alt text](image-12.png)
+
 Go to Apply Leave section.
 
 Select leave type (Casual or Privilege).
