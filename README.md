@@ -79,7 +79,7 @@ Status → Pending / Approved / Rejected
 
 2. For Admin (HR)
 
-Login as Admin (beingashmit@gmail.com,password: 12345)
+Login as Admin (email: beingashmit@gmail.com,password: 12345)
 
 Use the admin credentials provided.
 
