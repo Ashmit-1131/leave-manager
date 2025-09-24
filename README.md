@@ -36,26 +36,114 @@ Open http://localhost:3000 (frontend) and backend runs on http://localhost:8082
 - Emails via Nodemailer with Approve/Reject links
 - Cron-based auto-escalation after 24 hours
 
+1. For Employees
 
-![alt text](image.png)Home / Login (not logged in)
+Register / Login
+![alt text](image-9.png)
 
-This is the app home page when you are not logged in.
+If you are a new user, click Register and create an account.
 
-Use Email and Password to log in.
+![alt text](image-10.png)
 
-Important: Use a real email address for registration/login because the app sends notification emails to that address.
+If already registered, use Login.
 
-If you don’t have an account, click Create account to go to the registration page.
+Dashboard
+![alt text](image-11.png)
 
-![alt text](image-1.png)  registered yourself by filling all the fields, for now all the fields are required and you can registered as employee or admin and password should be atleast 5 character
-once you registered successfully you'll get this![alt text](image-2.png) and it will redirect you again to the login page from there you have to login again using the same email and password. once you logged in successfully you'll get this dashboard![alt text](image-3.png) from here you can apply for new leave by clicking on apply leave![alt text](image-4.png) all the fields are mandatory..
-after applying for leave your dashboard will look like this![alt text](image-5.png)
-from here you'll able to see all your history of leaves![alt text](image-6.png)  
+After login, you will see your leave balance (Casual & Privilege leaves).
 
-admin will recieve a mail for the applied leave something like this![alt text](image-7.png) from here admin can approve or reject the leave or he can open the dashboard his dashboard will look like this ![alt text](image-8.png) 
-from here also he can approve or reject the leave.
+Apply for Leave
+![alt text](image-12.png)
 
-the ui is not that much appealing for now because of time constraints because I had some time constraints and did not have the bandwidth but the functionality is working fine
+Go to Apply Leave section.
 
+Select leave type (Casual or Privilege).
 
+Pick the start & end dates.
 
+Enter a reason.
+
+Submit.
+
+✅ Your leave request should now appear under My Leaves with status = Pending.
+
+Check Leave Status
+
+In My Leaves page, you can see:
+
+Date range
+
+Type of leave
+
+Status → Pending / Approved / Rejected
+
+2. For Admin (HR)
+
+Login as Admin (email: beingashmit@gmail.com,password: 12345)
+
+Use the admin credentials provided.
+
+If logged in as Admin, you will see Admin Dashboard.
+
+Admin Dashboard
+![alt text](image-13.png)
+Shows:
+
+Total Employees
+
+Pending Leave Requests count
+
+Button → Review Requests
+
+Below, you can also see Employee Details Table with leave balances.
+
+Review Leave Requests
+
+Click Review Requests.
+![alt text](image-14.png)
+You will see a table of pending requests.
+
+For each request:
+
+ Click Approve (Green) to approve.
+
+Click Reject (Red) to reject.
+
+After decision, status will update for the employee.
+
+Adjust Employee Leave Balance
+
+In Employee Details Table, you can manually adjust leave balances.
+
+Use +1 (green button) to increase.
+
+Use -1 (red button) to decrease.
+
+The new balance will update immediately.
+
+Create New Admin (Optional Feature)
+
+In the Admin Employees section, there is a form to create another admin account.
+
+click on create User button
+![alt text](image-15.png)
+
+Fill in details → Click Create (only admin can create new admin).
+![alt text](image-16.png)
+The new admin will now be able to log in.
+
+3. Email Notifications (if SMTP enabled)
+
+When admin approves/rejects leave, the employee will get an email notification.
+
+Email may also contain links that redirect to the website.
+
+4. Test Workflow Example
+
+Login as Employee → Apply for leave.
+
+Login as Admin → Go to Review Requests → Approve the leave.
+
+Login back as Employee → See that the leave is now Approved.
+
+Admin adjusts leave balance → Employee sees updated balance in dashboard.
