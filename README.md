@@ -147,3 +147,48 @@ Login as Admin → Go to Review Requests → Approve the leave.
 Login back as Employee → See that the leave is now Approved.
 
 Admin adjusts leave balance → Employee sees updated balance in dashboard.
+
+
+
+
+to setUp this project locally clone the repository and follow these steps
+
+# Quick start (local)
+
+### Backend
+cd backend
+ .env   # set values
+ copy paste this in backend .env
+ {
+    PORT=8082
+MONGO_URI=mongodb+srv://ashmit:ashmit@cluster0.dndgoyg.mongodb.net/leave-management?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=jwtsecretekey
+JWT_EXPIRES_IN=1d
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=beingashmit@gmail.com
+SMTP_PASS=pbhn pqfx fhug wjfd
+
+FROM_EMAIL="Leave System <beingashmit@gmail.com>"
+# public URLs (frontend/backend)
+# Public URLs
+BACKEND_URL=http://localhost:8082    
+FRONTEND_URL=http://localhost:3000
+
+# Token secret for email actions
+ACTION_JWT_SECRET=abcedehfkdjdahajdalleijicsxse
+ACTION_JWT_EXPIRES=24h
+
+
+ }
+npm install
+npm start
+
+### Frontend
+cd frontend
+open the src folder in api/apiClient.js file 
+replace backend url with this:- http://localhost:8082/api
+npm install
+npm start
+
+Open http://localhost:3000 (frontend) and backend runs on http://localhost:8082
