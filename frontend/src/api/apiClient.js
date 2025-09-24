@@ -3,7 +3,7 @@ import axios from 'axios';
 
 
 // base_url from env or default
-const BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://leave-manager-1.onrender.com/api';
+const BASE_URL = 'https://leave-manager-2.onrender.com/api';
 
 const instance = axios.create({
   baseURL: BASE_URL,
